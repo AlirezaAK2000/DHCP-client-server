@@ -9,7 +9,7 @@ from .model.db import Mapping
 
 from .tools.addressing import AddressPool
 
-from datetime import datetime, timedelta
+# from datetime import datetime
 import random
 import time
 from .enums import ClientState
@@ -27,7 +27,7 @@ class DHCPServer:
         
         self.socket_lock = threading.Lock()
         
-        self.lease_time = timedelta(seconds=self.config['lease_time'])
+        self.lease_time = datetime.timedelta(seconds=self.config['lease_time'])
 
         self.parser = PacketParser()
 
@@ -117,7 +117,7 @@ class DHCPServer:
                     lease_time= self.config['lease_time'] 
                     )
                 else:
-                    Mapping.update({Mapping.map_date : datetime.now()}).where(
+                    Mapping.update({Mapping.map_date : datetime.datetime.now()}).where(
                         Mapping.mac_address == mac_address
                     )
                 
@@ -181,7 +181,7 @@ class DHCPServer:
         
     def handle_expired(self):
         while True:    
-            expired = Mapping.select().where(Mapping.map_date <  datetime.now() - self.lease_time)
+            expired = Mapping.select().where(Mapping.map_date <  datetime.datetime.now() - self.lease_time)
             
             for ex in expired:
                 self.pool.add_to_pool(ex.ip_address)
